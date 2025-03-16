@@ -111,6 +111,22 @@
     animation: gradientAnimation 5s ease infinite;
   }
 
+  /* Enhanced gradient text with more vibrant colors */
+  .gradient-text-enhanced {
+    @apply font-bold text-transparent bg-clip-text;
+    background-image: linear-gradient(90deg, #8B5CF6, #D946EF, #F97316);
+    background-size: 200% 200%;
+    animation: gradientAnimation 5s ease infinite;
+  }
+
+  /* Cyber gradient text */
+  .cyber-gradient-text {
+    @apply font-bold text-transparent bg-clip-text;
+    background-image: linear-gradient(90deg, #34bfdb, #6150fc);
+    background-size: 200% 200%;
+    animation: gradientAnimation 5s ease infinite;
+  }
+
   /* Card hover effect */
   .card-hover {
     @apply transition-all duration-300 hover:translate-y-[-5px] hover:shadow-lg;
@@ -134,6 +150,24 @@
   /* Transition for theme switching */
   .theme-transition {
     @apply transition-all duration-700;
+  }
+
+  /* 3D perspective container for hero card */
+  .perspective-container {
+    @apply transform;
+    perspective: 1500px;
+  }
+
+  /* 3D hero card with hover effect */
+  .hero-card-3d {
+    @apply transform transition-all duration-500;
+    transform-style: preserve-3d;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
+  }
+
+  .hero-card-3d:hover {
+    transform: translateY(-5px) rotateX(2deg) rotateY(2deg);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1), 0 10px 20px rgba(0, 0, 0, 0.05);
   }
 }
 

@@ -3,7 +3,8 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
 import HowItWorks from '../components/HowItWorks';
-import PricingSection from '../components/PricingSection';
+import FraudStats from '../components/FraudStats';
+import CallToAction from '../components/CallToAction';
 import Footer from '../components/Footer';
 import ParticleBackground from '../components/ParticleBackground';
 import { ThemeProvider } from '../context/ThemeContext';
@@ -97,7 +98,8 @@ const Index = () => {
         </section>
         
         <HowItWorks />
-        <PricingSection />
+        <FraudStats />
+        <CallToAction />
         <Footer />
       </div>
     </ThemeProvider>
