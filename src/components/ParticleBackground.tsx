@@ -5,10 +5,13 @@ import { useTheme } from '../context/ThemeContext';
 interface Particle {
   x: number;
   y: number;
+  z: number;
   size: number;
   speedX: number;
   speedY: number;
+  speedZ: number;
   opacity: number;
+  color: string;
 }
 
 const ParticleBackground: React.FC = () => {
@@ -24,6 +27,8 @@ const ParticleBackground: React.FC = () => {
     
     let particles: Particle[] = [];
     let animationFrameId: number;
+    let mouseX = 0;
+    let mouseY = 0;
     
     const handleResize = () => {
       canvas.width = window.innerWidth;
@@ -35,14 +40,22 @@ const ParticleBackground: React.FC = () => {
       particles = [];
       const particleCount = Math.min(Math.floor(window.innerWidth * 0.05), 100);
       
+      // Colors based on theme
+      const colors = theme === 'dark' 
+        ? ['#6150fc', '#34bfdb', '#8B5CF6', '#D946EF'] 
+        : ['#34bfdb', '#6150fc', '#8B5CF6', '#D946EF'];
+      
       for (let i = 0; i < particleCount; i++) {
         particles.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          size: Math.random() * 2 + 0.5,
-          speedX: (Math.random() - 0.5) * 0.3,
-          speedY: (Math.random() - 0.5) * 0.3,
-          opacity: Math.random() * 0.5 + 0.1
+          z: Math.random() * 1000,
+          size: Math.random() * 3 + 0.5,
+          speedX: (Math.random() - 0.5) * 0.5,
+          speedY: (Math.random() - 0.5) * 0.5,
+          speedZ: Math.random() * 0.5 + 0.1,
+          opacity: Math.random() * 0.7 + 0.3,
+          color: colors[Math.floor(Math.random() * colors.length)]
         });
       }
     };
@@ -50,36 +63,71 @@ const ParticleBackground: React.FC = () => {
     const drawParticles = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
-      const particleColor = theme === 'dark' ? '97, 80, 252' : '50, 191, 219';
-      const lineColor = theme === 'dark' ? '97, 80, 252' : '50, 191, 219';
+      // Sort particles by z-index for pseudo-3D effect
+      particles.sort((a, b) => a.z - b.z);
       
       particles.forEach((particle, i) => {
-        // Update position
-        particle.x += particle.speedX;
-        particle.y += particle.speedY;
+        // Update position with 3D movement
+        particle.x += particle.speedX + (mouseX - canvas.width/2) * 0.0001 * particle.z;
+        particle.y += particle.speedY + (mouseY - canvas.height/2) * 0.0001 * particle.z;
+        particle.z -= particle.speedZ;
         
-        // Boundary check with bounce
-        if (particle.x < 0 || particle.x > canvas.width) particle.speedX *= -1;
-        if (particle.y < 0 || particle.y > canvas.height) particle.speedY *= -1;
+        // Reset particle if it goes out of bounds or behind the camera
+        if (particle.x < 0 || particle.x > canvas.width || 
+            particle.y < 0 || particle.y > canvas.height ||
+            particle.z < 0) {
+          particle.x = Math.random() * canvas.width;
+          particle.y = Math.random() * canvas.height;
+          particle.z = 1000;
+          particle.opacity = Math.random() * 0.7 + 0.3;
+        }
         
-        // Draw particle
+        // Calculate size based on z position for perspective
+        const scale = 1000 / (1000 + particle.z);
+        const size = particle.size * scale;
+        
+        // Draw particle with glow effect
         ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${particleColor}, ${particle.opacity})`;
+        ctx.arc(particle.x, particle.y, size, 0, Math.PI * 2);
+        
+        // Add glow
+        const glow = ctx.createRadialGradient(
+          particle.x, particle.y, 0,
+          particle.x, particle.y, size * 3
+        );
+        glow.addColorStop(0, particle.color);
+        glow.addColorStop(1, 'transparent');
+        
+        ctx.fillStyle = particle.color;
         ctx.fill();
         
-        // Connect particles within certain distance
+        // Add subtle glow
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, size * 2, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
+        ctx.globalAlpha = particle.opacity * 0.3;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        
+        // Connect particles within certain distance, with depth consideration
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[j].x - particle.x;
           const dy = particles[j].y - particle.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
           
-          if (distance < 100) {
+          if (distance < 120 * scale) {
             ctx.beginPath();
             ctx.moveTo(particle.x, particle.y);
             ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = `rgba(${lineColor}, ${0.2 * (1 - distance / 100)})`;
-            ctx.lineWidth = 0.5;
+            
+            // Line color based on average z-depth
+            const avgZ = (particle.z + particles[j].z) / 2;
+            const opacity = Math.max(0, 0.5 * (1 - distance / (120 * scale)) * (1 - avgZ / 1000));
+            
+            ctx.strokeStyle = theme === 'dark' 
+              ? `rgba(97, 80, 252, ${opacity})` 
+              : `rgba(50, 191, 219, ${opacity})`;
+            ctx.lineWidth = Math.max(0.3, 1.5 * scale);
             ctx.stroke();
           }
         }
@@ -88,12 +136,20 @@ const ParticleBackground: React.FC = () => {
       animationFrameId = requestAnimationFrame(drawParticles);
     };
     
+    // Track mouse movement for interactive effect
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
     handleResize();
     window.addEventListener('resize', handleResize);
     drawParticles();
     
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationFrameId);
     };
   }, [theme]);
@@ -101,7 +157,7 @@ const ParticleBackground: React.FC = () => {
   return (
     <canvas 
       ref={canvasRef} 
-      className="fixed inset-0 z-0 pointer-events-none opacity-70 transition-opacity duration-1000"
+      className="fixed inset-0 z-0 pointer-events-none opacity-80 transition-opacity duration-1000"
     />
   );
 };
