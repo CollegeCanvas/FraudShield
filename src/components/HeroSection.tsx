@@ -83,7 +83,9 @@ const HeroSection: React.FC = () => {
               className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4"
             >
               <motion.a 
-                href="#" 
+                href="https://drive.usercontent.google.com/u/0/uc?id=1zuW1ltvO6C6hg2REqPgYlMSexT-WaQ60&export=download"
+                target="_blank"
+                rel="noopener noreferrer"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="glow-button bg-shield-500 text-white font-medium px-6 py-3 rounded-lg hover:bg-shield-600 transition-all duration-300 text-center transform hover:shadow-lg hover:shadow-shield-500/25"
