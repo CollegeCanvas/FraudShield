@@ -333,12 +333,12 @@ const UrlScanner: React.FC = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.5, type: 'spring', stiffness: 100 }}
-            className="relative perspective-container"
+            className="relative"
         >
             {/* Glow backdrop */}
             <div className="absolute inset-0 bg-gradient-to-br from-shield-500/30 via-cyber-400/20 to-transparent rounded-3xl blur-2xl transform scale-95 opacity-60 pointer-events-none" />
 
-            <div className="relative bg-gradient-to-br from-background to-secondary dark:from-card dark:to-background rounded-3xl p-1 subtle-border hero-card-3d">
+            <div className="relative bg-gradient-to-br from-background to-secondary dark:from-card dark:to-background rounded-3xl p-1 subtle-border shadow-xl hover:shadow-2xl transition-shadow duration-500">
                 <div className="bg-background dark:bg-card rounded-2xl overflow-hidden subtle-border">
                     {/* ── Browser chrome ── */}
                     <div className="h-9 bg-secondary dark:bg-muted flex items-center justify-between px-4">
@@ -367,16 +367,28 @@ const UrlScanner: React.FC = () => {
                                     </div>
 
                                     {/* Input */}
-                                    <div className="relative flex items-center gap-2 mb-4">
+                                    <div className="relative flex items-center gap-2 mb-4" style={{ zIndex: 50, position: 'relative' }}>
                                         <div className="flex-1 relative">
-                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/30" />
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground/30 pointer-events-none" />
                                             <input
                                                 ref={inputRef}
+                                                type="text"
+                                                autoComplete="off"
+                                                spellCheck={false}
                                                 value={url}
                                                 onChange={(e) => setUrl(e.target.value)}
+                                                onPaste={(e) => {
+                                                    e.stopPropagation();
+                                                    const pasted = e.clipboardData.getData('text');
+                                                    if (pasted) {
+                                                        e.preventDefault();
+                                                        setUrl(pasted.trim());
+                                                    }
+                                                }}
                                                 onKeyDown={handleKeyDown}
                                                 placeholder="e.g. google.com"
-                                                className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white/[0.04] border border-white/10 text-sm placeholder:text-foreground/30 focus:outline-none focus:border-shield-500/50 focus:ring-1 focus:ring-shield-500/25 transition-all"
+                                                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-white/10 text-sm placeholder:text-foreground/30 focus:outline-none focus:border-shield-500/50 focus:ring-1 focus:ring-shield-500/25 transition-all"
+                                                style={{ backgroundColor: 'rgba(255,255,255,0.04)', color: 'inherit', WebkitUserSelect: 'text', userSelect: 'text', position: 'relative', zIndex: 51 }}
                                             />
                                         </div>
                                         <motion.button
@@ -384,6 +396,7 @@ const UrlScanner: React.FC = () => {
                                             whileTap={{ scale: 0.96 }}
                                             onClick={handleScan}
                                             className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-shield-500 hover:bg-shield-600 text-white text-sm font-medium transition-colors shadow-lg shadow-shield-500/20"
+                                            style={{ position: 'relative', zIndex: 51 }}
                                         >
                                             Scan <ArrowRight className="h-3.5 w-3.5" />
                                         </motion.button>
