@@ -107,9 +107,9 @@ const CheckRow: React.FC<{
             >
                 <div className="flex items-center gap-2.5 min-w-0">
                     <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${status === 'pass' ? 'bg-green-500/15' :
-                            status === 'warn' ? 'bg-amber-500/15' :
-                                status === 'fail' ? 'bg-red-500/15' :
-                                    'bg-blue-500/15'
+                        status === 'warn' ? 'bg-amber-500/15' :
+                            status === 'fail' ? 'bg-red-500/15' :
+                                'bg-blue-500/15'
                         }`}>
                         <Icon className={`h-4 w-4 ${statusColor}`} />
                     </div>
@@ -336,7 +336,7 @@ const UrlScanner: React.FC = () => {
             className="relative perspective-container"
         >
             {/* Glow backdrop */}
-            <div className="absolute inset-0 bg-gradient-to-br from-shield-500/30 via-cyber-400/20 to-transparent rounded-3xl blur-2xl transform scale-95 opacity-60" />
+            <div className="absolute inset-0 bg-gradient-to-br from-shield-500/30 via-cyber-400/20 to-transparent rounded-3xl blur-2xl transform scale-95 opacity-60 pointer-events-none" />
 
             <div className="relative bg-gradient-to-br from-background to-secondary dark:from-card dark:to-background rounded-3xl p-1 subtle-border hero-card-3d">
                 <div className="bg-background dark:bg-card rounded-2xl overflow-hidden subtle-border">
@@ -435,7 +435,7 @@ const UrlScanner: React.FC = () => {
                                                     animate={{ opacity: 1, x: 0 }}
                                                     transition={{ delay: i * 0.1, duration: 0.3 }}
                                                     className={`flex items-center gap-2.5 p-2 rounded-lg transition-colors ${isCurrent ? 'bg-shield-500/10 border border-shield-500/20' :
-                                                            isDone ? 'bg-green-500/[0.05]' : 'opacity-40'
+                                                        isDone ? 'bg-green-500/[0.05]' : 'opacity-40'
                                                         }`}
                                                 >
                                                     {isDone ? (
